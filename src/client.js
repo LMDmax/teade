@@ -25,7 +25,6 @@ Client.prototype.request = function (method, payload, callback) {
     let host = this.host;
     let port = this.port;
     const url = host + ':' + port + '/' + method;
-    try {
         fetch(url, {
             method: "POST",
             headers: {
@@ -33,11 +32,10 @@ Client.prototype.request = function (method, payload, callback) {
             },
             body: JSON.stringify(payload),
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Server returned status ${response.status}: ${text}`);
-                });
+                const text = await response.text();
+                 throw new Error(text || 'Unknown server error');
             }
             return response.text();
         })
@@ -52,9 +50,7 @@ Client.prototype.request = function (method, payload, callback) {
         .catch(error => {
             return callback(error);
         });
-    } catch (error) {
-        return callback(error);
-    }
+
 };
 
 function getHostPort(host, port){
