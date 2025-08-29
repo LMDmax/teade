@@ -1,7 +1,5 @@
 "use strict";
 
-const request = require('request');
-
 function Client(host, port, hostPortSets) {
     let useHostPortSet = false;
     if(hostPortSets){
@@ -26,24 +24,37 @@ function Client(host, port, hostPortSets) {
 Client.prototype.request = function (method, payload, callback) {
     let host = this.host;
     let port = this.port;
-    request({
-        url: host + ':' + port + '/' + method,
-        method: "POST",
-        json: payload
-    }, function (error, response, body) {
-        if (!body) {
-            body = new Error('unknown error occured');
-        }
-        if (error) {
-            // there is an error in sending RPC
+    const url = host + ':' + port + '/' + method;
+    try {
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Server returned status ${response.status}: ${text}`);
+                });
+            }
+            return response.text();
+        })
+        .then(body => {
+            try {
+                const parsedBody = JSON.parse(body);
+                return callback(null, parsedBody);
+            } catch (e) {
+                return callback(null, body);
+            }
+        })
+        .catch(error => {
             return callback(error);
-        } else if (response.statusCode !== 200) {
-            // there is an error sent from RPC function
-            return callback(body);
-        }
-        // no error
-        return callback(null, body);
-    });
+        });
+    } catch (error) {
+        return callback(error);
+    }
 };
 
 function getHostPort(host, port){

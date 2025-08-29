@@ -1,12 +1,11 @@
 const each = require('lodash/each');
 const express = require('express');
-const bodyParser = require('body-parser');
 
 function Server(options) {
     const server = express();
 
-    server.use(bodyParser.json());
-    server.use(bodyParser.urlencoded({extended: false}));
+    server.use(express.json());
+    server.use(express.urlencoded({extended: false}));
 
     this._server = server;
     this.started = false;
