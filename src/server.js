@@ -4,7 +4,7 @@ const express = require('express');
 function Server(options) {
     const server = express();
 
-    server.use(express.json());
+    server.use(express.json({ limit: '6mb' }));
     server.use(express.urlencoded({extended: false}));
 
     this._server = server;

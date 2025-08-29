@@ -31,11 +31,11 @@
   },
   "engineStrict": true,
   "dependencies": {
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
+    "chai": "^6.0.1",
     "mocha": "^11.7.1"
   }
 }
